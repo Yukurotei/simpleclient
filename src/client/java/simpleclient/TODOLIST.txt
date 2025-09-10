@@ -1,0 +1,8 @@
+Kill Aura: Avoiding mobs like endermans and piglin and stuff
+Settings: Adding input system [1/2]
+GUI: make input box gui
+GUI: make it so text doesn't go over the width
+GUI: Add the ability to be able to configure the colors for monster, animal, player, and others
+GUI: Add description after hovering at an element for a desired time.
+Auto Eat: Fix been wonkey
+Freecam: improve freecam (less detectable) OPTIONAL
