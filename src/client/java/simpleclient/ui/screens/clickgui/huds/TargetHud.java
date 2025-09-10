@@ -77,6 +77,8 @@ public class TargetHud extends HudElement {
 
 
     private boolean isValidEntity(Entity e) {
+        boolean isTesting = ((TargetHUDSettings) ModuleManager.INSTANCE.getModule("TargetHUD")).test.isEnabled();
+        if (isTesting && e instanceof PlayerEntity) return true;
         if (!(e instanceof PlayerEntity)) return false;
         else {
             if (e != mc.player) {
