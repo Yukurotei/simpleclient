@@ -27,9 +27,10 @@ public class ModuleButton {
 	public Frame parent;
 	public int offset;
 	public List<Component> components;
-	
-	
 	public boolean extended;
+    public long displayDescriptionAfterMillis = 700;
+
+    private long lastUnhovered = 0;
 
 	public ModuleButton(Mod module, Frame parent, int offset) {
 		this.module = module;
@@ -59,7 +60,15 @@ public class ModuleButton {
 		context.fill(parent.x, parent.y + offset, parent.x + parent.width, parent.y + offset + parent.height, new Color(39, 125, 186, 160).getRGB());
 		if (isHovered(mouseX, mouseY)) {
 			context.fill(parent.x, parent.y + offset, parent.x + parent.width, parent.y + offset + parent.height, new Color(0, 0, 0, 50).getRGB());
-		}
+            //TODO: Add module description
+            long elapsed = System.currentTimeMillis() - lastUnhovered;
+            if (elapsed >= displayDescriptionAfterMillis) { //0.7 sec
+                context.fill(parent.x + parent.width, parent.y + offset, parent.x + parent.width + parent.mc.textRenderer.getWidth(module.getDescription()), parent.y + offset + parent.mc.textRenderer.fontHeight, new Color(0, 0, 0, 50).getRGB());
+                StringUtil.shrinkTextToWidthAndDraw(context, parent.mc.textRenderer.getWidth(module.getDescription()), parent.mc.textRenderer, module.getDescription(), parent.x + parent.width, parent.y + offset, module.isEnabled() ? Color.cyan.getRGB() : -1, true);
+            }
+		} else {
+            lastUnhovered = System.currentTimeMillis();
+        }
 		int textOffset = ((parent.height / 2) - parent.mc.textRenderer.fontHeight / 2);
         StringUtil.shrinkTextToWidthAndDraw(context, parent.width, parent.mc.textRenderer, module.getName(), parent.x + textOffset, parent.y + offset + textOffset, module.isEnabled() ? Color.cyan.getRGB() : -1, true);
 		if (!components.isEmpty()) {

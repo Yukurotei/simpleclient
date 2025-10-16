@@ -31,6 +31,7 @@ public class Tracer extends Mod implements RenderListener {
 	@Override
 	public void onDisable() {
 		Client.getInstance().eventManager.RemoveListener(RenderListener.class, this);
+        Client.getInstance().eventManager.RemoveListener(RenderListener.class, this);
 	}
 	
 	@Override
