@@ -113,7 +113,7 @@ public class Frame {
 	}
 	
 	public void mouseReleased(double mouseX, double mouseY, int button) {
-		if (button == 0 && dragging == true) {
+		if (button == 0 && dragging) {
 			dragging = false;
 		}
 		
@@ -132,12 +132,30 @@ public class Frame {
 		return mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
 	}
 	
-	public void updatePosition(double mouseX, double mouseY) {
-		if (dragging) {
-			x = (int) (mouseX - dragX);
-			y = (int) (mouseY - dragY);
-		}
-	}
+    public void updatePosition(double mouseX, double mouseY) {
+        if (dragging) {
+            x = (int) (mouseX - dragX);
+            y = (int) (mouseY - dragY);
+        }
+    }
+
+    public int getTotalHeight() {
+        if (!extended) {
+            return height;
+        }
+        int totalHeight = height;
+        for (ModuleButton button : buttons) {
+            totalHeight += height;
+            if (button.extended) {
+                for (Component component : button.components) {
+                    if (component.setting.isVisible()) {
+                        totalHeight += height;
+                    }
+                }
+            }
+        }
+        return totalHeight;
+    }
 
 	public void updateButtons() {
 		int offset = height;
