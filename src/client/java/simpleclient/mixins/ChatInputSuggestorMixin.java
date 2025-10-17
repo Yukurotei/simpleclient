@@ -43,57 +43,61 @@ public abstract class ChatInputSuggestorMixin {
 	public abstract void show(boolean narrateFirstSuggestion);
 	
 	@Inject(at = {
-			@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;getCursor()I", ordinal = 0) }, method = "refresh()V", cancellable = true)
+			@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;getCursor()I", ordinal = 0) }, method = "refresh()V")
 	private void onRefresh(CallbackInfo ci) {
-		String prefix = SimpleClient.PREFIX;
-		String string = this.textField.getText();
-		
-		if(string.length() > 0) {
-			int cursorPos = this.textField.getCursor();
-			String string2 = string.substring(0, cursorPos);
-			
-			if(string2.charAt(0) == '.') {
-				int j = 0;
-				Matcher matcher = Pattern.compile("(\\s+)").matcher(string2);
-				while (matcher.find()) {
-					j = matcher.end();
-				}
-				
-				SuggestionsBuilder builder = new SuggestionsBuilder(string2, j);
-				if(string2.length() <= prefix.length()) {
-					if(prefix.startsWith(string2)) {
-						builder.suggest(prefix + " ");
-					}else {
-						return;
-					}
-				}else {
-					int count = StringUtils.countMatches(string2, " ");
-					List<String> seperated = Arrays.asList(string2.split(" "));
-					if(count == 1) {
-						for (Object strObj : Client.getInstance().commandManager.getCommands().keySet().toArray()) {
-							String str = (String) strObj;
-							builder.suggest(str + " ");
-						}
-					}else {
-						if(seperated.size() <= 1) return;
-						Command c = Client.getInstance().commandManager.getCommandBySyntax(seperated.get(1));
-						if (c == null) {
-							messages.add(Text.of("SimpleClient: No commands found with name: " + string2).asOrderedText());
-							return;
-						}
-						
-						String[] suggestions = c.getAutocorrect(seperated);
+        try {
+            String prefix = SimpleClient.PREFIX;
+            String string = this.textField.getText();
 
-						if(suggestions == null || suggestions.length == 0) return;
-						for(String str : suggestions) {
-							builder.suggest(str + " ");
-						}
-					}
-				}
-				
-				this.pendingSuggestions = builder.buildFuture();
-				this.show(false);
-			}
-		}
+            if(!string.isEmpty()) {
+                int cursorPos = this.textField.getCursor();
+                String string2 = string.substring(0, cursorPos);
+
+                if(string2.charAt(0) == '.') {
+                    int j = 0;
+                    Matcher matcher = Pattern.compile("(\\s+)").matcher(string2);
+                    while (matcher.find()) {
+                        j = matcher.end();
+                    }
+
+                    SuggestionsBuilder builder = new SuggestionsBuilder(string2, j);
+                    if(string2.length() <= prefix.length()) {
+                        if(prefix.startsWith(string2)) {
+                            builder.suggest(prefix + " ");
+                        }else {
+                            return;
+                        }
+                    }else {
+                        int count = StringUtils.countMatches(string2, " ");
+                        List<String> seperated = Arrays.asList(string2.split(" "));
+                        if(count == 1) {
+                            for (Object strObj : Client.getInstance().commandManager.getCommands().keySet().toArray()) {
+                                String str = (String) strObj;
+                                builder.suggest(str + " ");
+                            }
+                        }else {
+                            if(seperated.size() <= 1) return;
+                            Command c = Client.getInstance().commandManager.getCommandBySyntax(seperated.get(1));
+                            if (c == null) {
+                                messages.add(Text.of("SimpleClient: No commands found with name: " + string2).asOrderedText());
+                                return;
+                            }
+
+                            String[] suggestions = c.getAutocorrect(seperated);
+
+                            if(suggestions == null || suggestions.length == 0) return;
+                            for(String str : suggestions) {
+                                builder.suggest(str + " ");
+                            }
+                        }
+                    }
+
+                    this.pendingSuggestions = builder.buildFuture();
+                    this.show(false);
+                }
+            }
+        } catch (StringIndexOutOfBoundsException ignored) {
+
+        }
 	}
 }
